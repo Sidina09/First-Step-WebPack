@@ -1,43 +1,74 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 module.exports = {
-  entry: './src/index.js',
+  entry: {
+    app:'./src/index.js'
+  } ,
+
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'main.js',
+    path: path.join(__dirname, "/dist"),
+    filename: "main.js"
   },
+
   mode: "development", //au niveau de partie developpement
+
+  devServer: {
+    static: {
+              directory: path.join(__dirname, "build")
+            },
+            devMiddleware: {
+            writeToDisk: true,
+            },
+            port: 1996,
+          },
+
   module: {
     rules: [
         {
           test: /\.html$/,
-          
           use:  [ 
             {
               loader: 'html-loader',
               options: {
                 minimize: true, //pour minimiser le taille
               },
-              
-            
             }
           ]
-        
         },
+        
         {
           test: /\.css$/,
           use: [
-            "style-loader", 
-            "css-loader"]
+            
+            MiniCssExtractPlugin.loader,
+            'css-loader'
+          ], //obliger à "css-loader" à la fin du tab et  on trouve de probléme style-loader au niveau de version (1.2.1 c'est le plus bien)
+        },
+
+        {
+
+        },
+
+        {
+
         }
+
     ]
 
   },
+
   plugins: [
     new HtmlWebpackPlugin({
-    filename: "index.html",
-    template: './src/index.html'})
+      filename: "index.html", 
+      template: "./src/index.html"
+    }),
+
+    new MiniCssExtractPlugin({ filename: "css/style.css"}),
+
+    new OptimizeCssAssetsPlugin({}),
   ],
 }
 
